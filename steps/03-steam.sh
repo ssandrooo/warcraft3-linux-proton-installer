@@ -30,8 +30,8 @@ OUT=$(python3 "$TOOLSDIR/steam_shortcuts.py" "$GAMEDIR" \
 }
 echo "$OUT"
 
-ROC_APPID=$(echo "$OUT" | grep "^APPID:" | sed -n '1s/^APPID://p')
-TFT_APPID=$(echo "$OUT" | grep "^APPID:" | sed -n '2s/^APPID://p')
+ROC_APPID=$(echo "$OUT" | grep "^ROC_APPID:" | sed 's/^ROC_APPID://')
+TFT_APPID=$(echo "$OUT" | grep "^TFT_APPID:" | sed 's/^TFT_APPID://')
 
 [ -n "$ROC_APPID" ] && [ -n "$TFT_APPID" ] || { echo "ERROR: Missing app IDs."; exit 1; }
 [ "$ROC_APPID" != "$TFT_APPID" ] || { echo "ERROR: App IDs must differ."; exit 1; }

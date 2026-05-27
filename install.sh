@@ -14,6 +14,27 @@ set -euo pipefail
 # Optional:      pip install vdf  (automates Steam shortcut setup)
 # Usage:         ./install.sh [BASEDIR]
 
+if [[ "${1:-}" == "-h" || "${1:-}" == "--help" ]]; then
+    cat <<'USAGE'
+Usage: ./install.sh [BASEDIR]
+
+Warcraft III: RoC + TFT — Digital 1.27b + Widescreen
+Master installer for Steam / GE-Proton on Linux.
+
+  BASEDIR  Parent directory for game files and staging (default: parent of this repo)
+
+Steps (can also run standalone):
+  steps/01-download.sh   Download installers, patches, widescreen mod
+  steps/02-install.sh    Install RoC + TFT via temp Wine prefix
+  steps/03-steam.sh      Add shortcuts to Steam (auto or manual)
+  steps/04-prefix.sh     Configure shared Wine prefix
+
+Prerequisites: GE-Proton (via protonup-qt)
+Optional:      pip install vdf  (automates Steam shortcut setup)
+USAGE
+    exit 0
+fi
+
 SCRIPTDIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 export W3_BASEDIR="${1:-$(dirname "$SCRIPTDIR")}"
 

@@ -12,7 +12,14 @@ dl() {
         return
     fi
     echo "  [$tag] downloading..."
-    wget -nc -O "$dest" "$url" || true
+    local tmp="${dest}.part"
+    if wget -O "$tmp" "$url"; then
+        mv "$tmp" "$dest"
+    else
+        rm -f "$tmp"
+        echo "  [$tag] download FAILED"
+        return 1
+    fi
 }
 
 dl "$STAGING/w3roc_digital.exe" \
@@ -36,8 +43,8 @@ dl "$STAGING/RenderEdge_Widescreen.mix" \
     "5/5 Widescreen mod"
 
 # Registry file from template (skip if resolution unchanged)
-RES_W_HEX=$(printf '%x' "$RES_W")
-RES_H_HEX=$(printf '%x' "$RES_H")
+RES_W_HEX=$(printf '%08x' "$RES_W")
+RES_H_HEX=$(printf '%08x' "$RES_H")
 REG_FILE="$STAGING/warcraft_iii.reg"
 REG_MARKER="$STAGING/.reg_${RES_W}x${RES_H}"
 REG_TEMPLATE="$TEMPLATEDIR/warcraft_iii.reg.tpl"

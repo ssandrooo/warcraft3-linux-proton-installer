@@ -16,7 +16,8 @@ except ImportError:
 
 
 def find_steam_dir():
-    for p in ["~/.local/share/Steam", "~/.steam/steam"]:
+    for p in ["~/.local/share/Steam", "~/.steam/steam",
+              "~/.var/app/com.valvesoftware.Steam/.local/share/Steam"]:
         d = os.path.expanduser(p)
         if os.path.isdir(os.path.join(d, "steamapps")):
             return d
@@ -37,7 +38,8 @@ def find_shortcuts_vdf(steam_dir):
 
 
 def shortcut_appid(exe, name):
-    return binascii.crc32((exe + name).encode()) | 0x80000000
+    # Steam hashes the quoted exe + unquoted name
+    return binascii.crc32((f'"{exe}"{name}').encode("utf-8")) | 0x80000000
 
 
 def add_shortcuts(vdf_path, games):
@@ -146,8 +148,8 @@ def main():
     print("Configuring compatibility tool...")
     set_compat_tool(steam_dir, app_ids, args.proton)
 
-    for aid in app_ids:
-        print(f"APPID:{aid}")
+    print(f"ROC_APPID:{app_ids[0]}")
+    print(f"TFT_APPID:{app_ids[1]}")
 
     print("OK")
     return 0

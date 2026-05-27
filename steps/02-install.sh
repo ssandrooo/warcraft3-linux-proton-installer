@@ -87,8 +87,11 @@ mkdir -p "$GAMEDIR"
 cp -a "$TGAME"/. "$GAMEDIR/"
 
 if [ -f "$GAMEDIR/Warcraft III.exe" ] && [ -f "$GAMEDIR/Frozen Throne.exe" ]; then
-    echo "Cleaning up temp prefix..."
-    rm -rf "$TPFX"
+    read -p "Remove temp install prefix at $TPFX? [Y/n] " DEL
+    if [[ ! "${DEL:-y}" =~ [nN] ]]; then
+        rm -rf "$TPFX"
+        echo "Temp prefix removed."
+    fi
 else
     echo "WARNING: copy may be incomplete — keeping temp prefix at $TPFX"
 fi

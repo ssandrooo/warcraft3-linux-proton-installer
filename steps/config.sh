@@ -14,19 +14,24 @@ TEMPLATEDIR="$SCRIPTDIR/templates"
 # ── Steam ──
 
 STEAM_DIR=""
-for _d in "$HOME/.local/share/Steam" "$HOME/.steam/steam"; do
+for _d in "$HOME/.local/share/Steam" "$HOME/.steam/steam" \
+          "$HOME/.var/app/com.valvesoftware.Steam/.local/share/Steam"; do
     [ -d "$_d/steamapps" ] && { STEAM_DIR="$_d"; break; }
 done
 if [ -z "$STEAM_DIR" ]; then
-    echo "ERROR: Steam not found (checked ~/.local/share/Steam, ~/.steam/steam)"
+    echo "ERROR: Steam not found (checked native + Flatpak paths)"
     exit 1
 fi
 COMPATDATA="$STEAM_DIR/steamapps/compatdata"
 
 # ── GE-Proton ──
 
-GE_PROTON_DIR=$(find "$HOME/.steam/root/compatibilitytools.d" \
-    -maxdepth 1 -name "GE-Proton*" -type d 2>/dev/null | sort -V | tail -1)
+GE_PROTON_DIR=""
+for _ctd in "$HOME/.steam/root/compatibilitytools.d" \
+            "$HOME/.var/app/com.valvesoftware.Steam/data/Steam/compatibilitytools.d"; do
+    _found=$(find "$_ctd" -maxdepth 1 -name "GE-Proton*" -type d 2>/dev/null | sort -V | tail -1)
+    [ -n "$_found" ] && { GE_PROTON_DIR="$_found"; break; }
+done
 if [ -z "$GE_PROTON_DIR" ]; then
     echo "ERROR: GE-Proton not found. Install via protonup-qt."
     exit 1
@@ -40,12 +45,26 @@ if [ -n "${RES_W:-}" ] && [ -n "${RES_H:-}" ]; then
     :
 else
     RES_W=1920; RES_H=1080
-    if command -v xrandr &>/dev/null; then
+    _RES=""
+    if [ -z "$_RES" ] && command -v xrandr &>/dev/null; then
         _RES=$(xrandr --current 2>/dev/null \
             | grep -oP '\d+x\d+(?=\+0\+0)' | head -1 || true)
+    fi
+    if [ -z "$_RES" ] && command -v wlr-randr &>/dev/null; then
+        _RES=$(wlr-randr 2>/dev/null \
+            | grep -oP '\d+x\d+(?= px)' | head -1 || true)
+    fi
+    if [ -z "$_RES" ] && [ -n "${WAYLAND_DISPLAY:-}" ] && command -v swaymsg &>/dev/null; then
+        _RES=$(swaymsg -t get_outputs 2>/dev/null \
+            | grep -oP '"current_mode".*?"width":\s*\K\d+' | head -1 || true)
         if [ -n "$_RES" ]; then
-            RES_W="${_RES%x*}"; RES_H="${_RES#*x}"
+            _H=$(swaymsg -t get_outputs 2>/dev/null \
+                | grep -oP '"current_mode".*?"height":\s*\K\d+' | head -1 || true)
+            [ -n "$_H" ] && _RES="${_RES}x${_H}"
         fi
+    fi
+    if [ -n "$_RES" ] && [[ "$_RES" == *x* ]]; then
+        RES_W="${_RES%x*}"; RES_H="${_RES#*x}"
     fi
 fi
 
