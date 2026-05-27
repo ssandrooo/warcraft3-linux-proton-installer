@@ -9,7 +9,7 @@ Windows Registry Editor Version 5.00
 "cinematicwidth"=dword:%%RES_W_HEX%%
 "colordepth"=dword:00000020
 "lights"=dword:00000002
-"maxfps"=dword:3c
+"maxfps"=dword:0000003c
 "modeldetail"=dword:00000002
 "particles"=dword:00000002
 "refreshrate"=dword:0000003c

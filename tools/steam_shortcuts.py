@@ -3,6 +3,7 @@
 
 import argparse
 import binascii
+import ctypes
 import glob
 import os
 import shutil
@@ -38,8 +39,8 @@ def find_shortcuts_vdf(steam_dir):
 
 
 def shortcut_appid(exe, name):
-    # Steam hashes the quoted exe + unquoted name
-    return binascii.crc32((f'"{exe}"{name}').encode("utf-8")) | 0x80000000
+    crc = binascii.crc32((f'"{exe}"{name}').encode("utf-8")) | 0x80000000
+    return ctypes.c_int32(crc).value
 
 
 def add_shortcuts(vdf_path, games):
@@ -56,12 +57,16 @@ def add_shortcuts(vdf_path, games):
 
     app_ids = []
     for name, exe, start_dir in games:
-        aid = shortcut_appid(exe, name)
-        app_ids.append(aid)
-
         if name in existing:
+            for v in shortcuts.values():
+                if isinstance(v, dict) and v.get("AppName") == name:
+                    app_ids.append(v["appid"])
+                    break
             print(f"  '{name}' already exists, skip")
             continue
+
+        aid = shortcut_appid(exe, name)
+        app_ids.append(aid)
 
         shortcuts[str(next_idx)] = {
             "appid": aid,

@@ -52,16 +52,13 @@ else
     fi
     if [ -z "$_RES" ] && command -v wlr-randr &>/dev/null; then
         _RES=$(wlr-randr 2>/dev/null \
-            | grep -oP '\d+x\d+(?= px)' | head -1 || true)
+            | grep 'current' | grep -oP '\d+x\d+(?= px)' | head -1 || true)
     fi
-    if [ -z "$_RES" ] && [ -n "${WAYLAND_DISPLAY:-}" ] && command -v swaymsg &>/dev/null; then
+    if [ -z "$_RES" ] && [ -n "${WAYLAND_DISPLAY:-}" ] \
+            && command -v swaymsg &>/dev/null && command -v jq &>/dev/null; then
         _RES=$(swaymsg -t get_outputs 2>/dev/null \
-            | grep -oP '"current_mode".*?"width":\s*\K\d+' | head -1 || true)
-        if [ -n "$_RES" ]; then
-            _H=$(swaymsg -t get_outputs 2>/dev/null \
-                | grep -oP '"current_mode".*?"height":\s*\K\d+' | head -1 || true)
-            [ -n "$_H" ] && _RES="${_RES}x${_H}"
-        fi
+            | jq -r '.[] | select(.focused) | "\(.current_mode.width)x\(.current_mode.height)"' \
+            2>/dev/null | head -1 || true)
     fi
     if [ -n "$_RES" ] && [[ "$_RES" == *x* ]]; then
         RES_W="${_RES%x*}"; RES_H="${_RES#*x}"
