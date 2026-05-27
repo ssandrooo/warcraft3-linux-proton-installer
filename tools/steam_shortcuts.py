@@ -40,8 +40,7 @@ def find_shortcuts_vdf(steam_dir):
 
 
 def shortcut_appid(exe, name):
-    crc = binascii.crc32((f'"{exe}"{name}').encode("utf-8")) | 0x80000000
-    return ctypes.c_int32(crc).value
+    return binascii.crc32((f'"{exe}"{name}').encode("utf-8")) | 0x80000000
 
 
 def add_shortcuts(vdf_path, games):
@@ -70,7 +69,7 @@ def add_shortcuts(vdf_path, games):
         app_ids.append(aid)
 
         shortcuts[str(next_idx)] = {
-            "appid": aid,
+            "appid": ctypes.c_int32(aid).value,
             "AppName": name,
             "Exe": f'"{exe}"',
             "StartDir": f'"{start_dir}"',
@@ -114,7 +113,7 @@ def set_compat_tool(steam_dir, app_ids, tool_name):
 
     modified = False
     for aid in app_ids:
-        key = str(aid & 0xFFFFFFFF)
+        key = str(aid)
         if key not in mapping:
             mapping[key] = {"name": tool_name, "config": "", "priority": "250"}
             print(f"  Set {tool_name} for app {key}")
@@ -154,8 +153,8 @@ def main():
     print("Configuring compatibility tool...")
     set_compat_tool(steam_dir, app_ids, args.proton)
 
-    print(f"ROC_APPID:{app_ids[0] & 0xFFFFFFFF}")
-    print(f"TFT_APPID:{app_ids[1] & 0xFFFFFFFF}")
+    print(f"ROC_APPID:{app_ids[0]}")
+    print(f"TFT_APPID:{app_ids[1]}")
 
     print("OK")
     return 0
