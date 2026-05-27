@@ -49,8 +49,12 @@ echo "  Resolution:  ${RES_W}x${RES_H}"
 
 read -p "Change resolution? [y/N] " -n1 CHG; echo
 if [[ "${CHG:-}" =~ [yY] ]]; then
-    read -p "  Width [$RES_W]: " W; export RES_W="${W:-$RES_W}"
-    read -p "  Height [$RES_H]: " H; export RES_H="${H:-$RES_H}"
+    read -p "  Width [$RES_W]: " W; W="${W:-$RES_W}"
+    [[ "$W" =~ ^[0-9]+$ ]] || { echo "Invalid width (must be a number)."; exit 1; }
+    export RES_W="$W"
+    read -p "  Height [$RES_H]: " H; H="${H:-$RES_H}"
+    [[ "$H" =~ ^[0-9]+$ ]] || { echo "Invalid height (must be a number)."; exit 1; }
+    export RES_H="$H"
     echo "  → ${RES_W}x${RES_H}"
 fi
 

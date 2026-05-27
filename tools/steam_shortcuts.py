@@ -17,6 +17,7 @@ except ImportError:
 
 
 def find_steam_dir():
+    # Keep in sync with Steam detection in steps/config.sh
     for p in ["~/.local/share/Steam", "~/.steam/steam",
               "~/.var/app/com.valvesoftware.Steam/.local/share/Steam"]:
         d = os.path.expanduser(p)
@@ -60,7 +61,7 @@ def add_shortcuts(vdf_path, games):
         if name in existing:
             for v in shortcuts.values():
                 if isinstance(v, dict) and v.get("AppName") == name:
-                    app_ids.append(v["appid"])
+                    app_ids.append(v.get("appid", shortcut_appid(exe, name)))
                     break
             print(f"  '{name}' already exists, skip")
             continue
@@ -113,7 +114,7 @@ def set_compat_tool(steam_dir, app_ids, tool_name):
 
     modified = False
     for aid in app_ids:
-        key = str(aid)
+        key = str(aid & 0xFFFFFFFF)
         if key not in mapping:
             mapping[key] = {"name": tool_name, "config": "", "priority": "250"}
             print(f"  Set {tool_name} for app {key}")
@@ -153,8 +154,8 @@ def main():
     print("Configuring compatibility tool...")
     set_compat_tool(steam_dir, app_ids, args.proton)
 
-    print(f"ROC_APPID:{app_ids[0]}")
-    print(f"TFT_APPID:{app_ids[1]}")
+    print(f"ROC_APPID:{app_ids[0] & 0xFFFFFFFF}")
+    print(f"TFT_APPID:{app_ids[1] & 0xFFFFFFFF}")
 
     print("OK")
     return 0

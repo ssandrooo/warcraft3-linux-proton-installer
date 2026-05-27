@@ -1,6 +1,6 @@
 Windows Registry Editor Version 5.00
 
-[HKEY_CURRENT_USER\\Software\\Blizzard Entertainment\\Warcraft III\\Video]
+[HKEY_CURRENT_USER\Software\Blizzard Entertainment\Warcraft III\Video]
 "animquality"=dword:00000002
 "cinematicbpp"=dword:00000020
 "cinematicheight"=dword:%%RES_H_HEX%%
@@ -19,7 +19,7 @@ Windows Registry Editor Version 5.00
 "texquality"=dword:00000002
 "vsync"=dword:00000001
 
-[HKEY_CURRENT_USER\\Software\\Blizzard Entertainment\\Warcraft III\\Sound]
+[HKEY_CURRENT_USER\Software\Blizzard Entertainment\Warcraft III\Sound]
 "ambient"=dword:00000001
 "environmental"=dword:00000001
 "movement"=dword:00000001
@@ -30,6 +30,6 @@ Windows Registry Editor Version 5.00
 "softwaremidi"=dword:00000001
 "subtitles"=dword:00000001
 
-[HKEY_CURRENT_USER\\Software\\Wine\\X11 Driver]
+[HKEY_CURRENT_USER\Software\Wine\X11 Driver]
 "UseXRandR"="Y"
 "UseXVidMode"="N"

@@ -13,6 +13,7 @@ TEMPLATEDIR="$SCRIPTDIR/templates"
 
 # ── Steam ──
 
+# Keep in sync with find_steam_dir() in tools/steam_shortcuts.py
 STEAM_DIR=""
 for _d in "$HOME/.local/share/Steam" "$HOME/.steam/steam" \
           "$HOME/.var/app/com.valvesoftware.Steam/.local/share/Steam"; do
@@ -60,7 +61,7 @@ else
             | jq -r '.[] | select(.focused) | "\(.current_mode.width)x\(.current_mode.height)"' \
             2>/dev/null | head -1 || true)
     fi
-    if [ -n "$_RES" ] && [[ "$_RES" == *x* ]]; then
+    if [ -n "$_RES" ] && [[ "$_RES" =~ ^[0-9]+x[0-9]+$ ]]; then
         RES_W="${_RES%x*}"; RES_H="${_RES#*x}"
     fi
 fi
